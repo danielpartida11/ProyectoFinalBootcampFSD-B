@@ -24,7 +24,12 @@ class UpdateCar extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => 'required|unique:cars, name' . $this->route('car')->id,
+            'model' => 'required|unique:cars, model',
+            'fuel' => 'required',
+            'km' => 'required',
+            'tank' => 'required',
+            'prize' => 'required',
         ];
     }
 }
