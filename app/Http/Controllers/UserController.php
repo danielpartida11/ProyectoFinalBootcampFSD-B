@@ -4,82 +4,55 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    //POST -> CREAR UN USUARIO
     public function store(Request $request)
     {
-        //
+        $create_user = $request->all();
+        $create_user['password'] = Hash::make($request->password);
+
+        User::create($create_user);
+        return response()->json([
+            'res' => true,
+            'message' => 'Added User'
+        ], 200);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function show(User $user)
+    public function login(Request $request)
     {
-        //
+        $user = User::whereEmail($request->email)->first();
+        if (!is_null($user) && Hash::check($request->password, $user->password)) 
+        {
+            $token = $user->createToken('proy.back-php-cars')->accessToken;
+
+            return response()->json([
+                'res' => true,
+                'token' => $token,
+                'message' => 'Welcome Bro!!'
+            ], 200);
+        }
+        else{
+            return response()->json([
+                'res' => false,
+                'message' => 'Wrong account or password'
+            ], 400);
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(User $user)
+    public function logout()
     {
-        //
-    }
+        $user = auth()->user();
+        $user->tokens->each(function($token, $key){
+            $token->delete();
+        });
+        $user->save();
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, User $user)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(User $user)
-    {
-        //
+        return response()->json([
+            'res' => false,
+            'message' => 'Bye Bye'
+        ], 200);
     }
 }

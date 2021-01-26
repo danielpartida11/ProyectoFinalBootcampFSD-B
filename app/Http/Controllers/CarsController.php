@@ -4,82 +4,59 @@ namespace App\Http\Controllers;
 
 use App\Models\Cars;
 use Illuminate\Http\Request;
+use Illuminate\Http\Request\CreateCar;
+use Illuminate\Http\Request\UpdateCar;
 
 class CarsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    //GET -> MOSTRAR LISTADO DE COCHES
+    public function index(Request $request)
     {
-        //
+        if($request->has('search'))
+        {
+            $search_car = Cars::where('name', 'like', '%' . $request->search . '%')->get();
+        }
+        else{
+            $search_car = Cars::all();
+        }
+        return $search_car;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    //POST -> CREAR UN COCHE
+    public function store(CreateCar $request)
     {
-        //
+        $create_car = $request->all();
+        Cars::create($create_car);
+        return response()->json([
+            'res' => true,
+            'message' => 'Added Car'
+        ], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    //GET -> DEVUELVE UN SOLO COCHE
+    public function show(Cars $car)
     {
-        //
+        return $car;
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Cars  $cars
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Cars $cars)
+    //PUT -> ACTUALIZAR COCHES
+    public function update(UpdateCar $request, Cars $car)
     {
-        //
+        $update_car = $request->all();
+        $car->update($update_car);
+        return response()->json([
+            'res' => true,
+            'message' => 'Updated Car'
+        ], 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Cars  $cars
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Cars $cars)
+    //DELETE -> ELIMINAR COCHES
+    public function destroy($id)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Cars  $cars
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Cars $cars)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Cars  $cars
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Cars $cars)
-    {
-        //
+        Cars::destroy($id);
+        return response()->json([
+            'res' => true,
+            'message' => 'Deleted Car'
+        ], 200);
     }
 }
