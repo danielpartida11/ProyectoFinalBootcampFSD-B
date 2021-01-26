@@ -24,7 +24,12 @@ class CreateCar extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => 'required|unique:cars, name',
+            'model' => 'required|unique:cars, model',
+            'fuel' => 'required',
+            'km' => 'required',
+            'tank' => 'required',
+            'prize' => 'required',
         ];
     }
 }
