@@ -17,6 +17,10 @@ class CreateCarsTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('model');
+            $table->string('fuel');
+            $table->integer('km');
+            $table->integer('tank');
+            $table->integer('prize');
             $table->timestamps();
         });
     }
